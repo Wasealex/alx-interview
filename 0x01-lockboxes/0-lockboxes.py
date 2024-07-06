@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """
 This module contains a function called `canUnlockAll` that 
 determines whether all the boxes in a given list can be unlocked.
