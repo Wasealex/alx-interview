@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
 This module reads from standard input and computes metrics from the log file.
 """
@@ -14,6 +14,7 @@ def print_stats(total_size, status_codes):
         if status_codes[code] > 0:
             print(f"{code}: {status_codes[code]}")
 
+
 def parse_line(line):
     """
     Parse a line from the log file.
@@ -27,12 +28,20 @@ def parse_line(line):
     except (IndexError, ValueError):
         return None, None, None
 
+
 def main():
     """
     Main function for reading from standard input.
     """
     total_size = 0
-    status_codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+    status_codes = {200: 0,
+                    301: 0,
+                    400: 0,
+                    401: 0,
+                    403: 0,
+                    404: 0,
+                    405: 0,
+                    500: 0}
     line_count = 0
 
     try:
@@ -50,6 +59,7 @@ def main():
 
     except KeyboardInterrupt:
         print_stats(total_size, status_codes)
+
 
 if __name__ == "__main__":
     """
