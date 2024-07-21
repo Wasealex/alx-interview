@@ -1,68 +1,40 @@
 #!/usr/bin/python3
 """
-This module reads from standard input and computes metrics from the log file.
+Script that reads stdin line by line and computes metrics
 """
 import sys
 
 
-def print_stats(total_size, status_codes):
-    """
-    Print the total file size and the status codes.
-    """
-    print("Total file size:", total_size)
-    for code in sorted(status_codes.keys()):
-        if status_codes[code] > 0:
-            print(f"{code}: {status_codes[code]}")
+# Status code and their count of appearance in the log
+status_code = {'200': 0, '301': 0, '400': 0, '401': 0,
+               '403': 0, '404': 0, '405': 0, '500': 0}
+total_size = 0
+counter = 0
 
+try:
+    for line in sys.stdin:  # Read line by line
+        line_list = line.split(" ")  # Split the line by space
+        if len(line_list) > 4:
+            code = line_list[-2]
+            size = int(line_list[-1])
+            # Check if the code is in the status_code
+            if code in status_code.keys():
+                status_code[code] += 1
+            total_size += size
+            counter += 1
 
-def parse_line(line):
-    """
-    Parse a line from the log file.
-    """
-    try:
-        parts = line.split()
-        ip_address = parts[0]
-        status_code = int(parts[-2])
-        file_size = int(parts[-1])
-        return ip_address, status_code, file_size
-    except (IndexError, ValueError):
-        return None, None, None
+        if counter == 10:  # Print the size and the status code every 10 lines
+            counter = 0
+            print('File size: {}'.format(total_size))
+            for key, value in sorted(status_code.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
 
+except Exception as err:
+    pass
 
-def main():
-    """
-    Main function for reading from standard input.
-    """
-    total_size = 0
-    status_codes = {200: 0,
-                    301: 0,
-                    400: 0,
-                    401: 0,
-                    403: 0,
-                    404: 0,
-                    405: 0,
-                    500: 0}
-    line_count = 0
-
-    try:
-        for line in sys.stdin:
-            ip_address, status_code, file_size = parse_line(line.strip())
-            if ip_address is None:
-                continue
-
-            total_size += file_size
-            status_codes[status_code] += 1
-            line_count += 1
-
-            if line_count % 10 == 0:
-                print_stats(total_size, status_codes)
-
-    except KeyboardInterrupt:
-        print_stats(total_size, status_codes)
-
-
-if __name__ == "__main__":
-    """
-    Main entry point for the script.
-    """
-    main()
+finally:  # Print the size and the status code when the loop ends
+    print('File size: {}'.format(total_size))
+    for key, value in sorted(status_code.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
